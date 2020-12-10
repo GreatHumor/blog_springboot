@@ -1,11 +1,21 @@
 node {
+    checkout scm
     stage('Build') {
-        echo 'Building....'
+        sh 'make' 
+        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
     }
     stage('Test') {
-        echo 'Testing....'
+        /* `make check` 在测试失败后返回非零的返回码；
+        * 使用 `true` 允许流水线继续进行
+        */
+        sh 'make check || true' 
+        junit '**/target/*.xml' 
     }
+    /* .. snip .. */
     stage('Deploy') {
-        echo 'Deploying....'
+        if (currentBuild.result == null || currentBuild.result == 'SUCCESS') { 
+            sh 'make publish'
+        }
     }
+    /* .. snip .. */
 }
