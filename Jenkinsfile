@@ -1,24 +1,11 @@
 pipeline {
-    agent any 
-    environment {
-        // 使用 returnStdout
-        CC = """${sh(
-                returnStdout: true,
-                script: 'echo "clang"'
-            )}""" 
-        // 使用 returnStatus
-        EXIT_STATUS = """${sh(
-                returnStatus: true,
-                script: 'exit 1'
-            )}"""
+    agent {
+        docker { image 'node:7-alpine' }
     }
     stages {
-        stage('Example') {
-            environment {
-                DEBUG_FLAGS = '-g'
-            }
+        stage('Test') {
             steps {
-                sh 'printenv'
+                sh 'node --version'
             }
         }
     }
